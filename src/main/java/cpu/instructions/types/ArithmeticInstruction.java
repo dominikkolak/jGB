@@ -1,4 +1,4 @@
 package cpu.instructions.types;
 
-public enum ArithmeticInstruction {
+public class ArithmeticInstruction {
 }

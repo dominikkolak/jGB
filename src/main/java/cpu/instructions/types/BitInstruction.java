@@ -1,4 +1,4 @@
 package cpu.instructions.types;
 
-public enum BitInstruction {
+public class BitInstruction {
 }
