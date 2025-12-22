@@ -9,12 +9,7 @@ import cpu.interfaces.BUS;
 public class ArithmeticInstruction implements Instruction {
 
     private enum ArithType {
-        ADD,
-        ADC,
-        SUB,
-        SBC,
-        INC,
-        DEC
+        ADD, ADC, SUB, SBC, INC, DEC
     }
 
     private final ArithType type;
@@ -25,29 +20,17 @@ public class ArithmeticInstruction implements Instruction {
         this.register = register;
     }
 
-    public static ArithmeticInstruction add(Register8 register) {
-        return new ArithmeticInstruction(ArithType.ADD, register);
-    }
+    public static ArithmeticInstruction add(Register8 register) {return new ArithmeticInstruction(ArithType.ADD, register);}
 
-    public static ArithmeticInstruction adc(Register8 register) {
-        return new ArithmeticInstruction(ArithType.ADC, register);
-    }
+    public static ArithmeticInstruction adc(Register8 register) {return new ArithmeticInstruction(ArithType.ADC, register);}
 
-    public static ArithmeticInstruction sub(Register8 register) {
-        return new ArithmeticInstruction(ArithType.SUB, register);
-    }
+    public static ArithmeticInstruction sub(Register8 register) {return new ArithmeticInstruction(ArithType.SUB, register);}
 
-    public static ArithmeticInstruction sbc(Register8 register) {
-        return new ArithmeticInstruction(ArithType.SBC, register);
-    }
+    public static ArithmeticInstruction sbc(Register8 register) {return new ArithmeticInstruction(ArithType.SBC, register);}
 
-    public static ArithmeticInstruction inc(Register8 register) {
-        return new ArithmeticInstruction(ArithType.INC, register);
-    }
+    public static ArithmeticInstruction inc(Register8 register) {return new ArithmeticInstruction(ArithType.INC, register);}
 
-    public static ArithmeticInstruction dec(Register8 register) {
-        return new ArithmeticInstruction(ArithType.DEC, register);
-    }
+    public static ArithmeticInstruction dec(Register8 register) {return new ArithmeticInstruction(ArithType.DEC, register);}
 
     @Override
     public int execute(RegisterFile registers, ALU alu, BUS bus) {
