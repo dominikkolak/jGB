@@ -3,7 +3,7 @@ package cpu.instruction.definitions;
 import cpu.instruction.CycleState;
 import cpu.instruction.Instruction;
 
-import static cpu.instruction.CycleState.DONE;
+import static cpu.instruction.CycleState.*;
 
 // Credit for Instruction descriptions to:
 // Game Boy: Complete Technical Reference by gekkio

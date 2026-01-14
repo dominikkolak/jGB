@@ -1,6 +1,7 @@
 package cpu.instruction.tables;
 
 import cpu.instruction.Instruction;
+
 import cpu.instruction.definitions.*;
 import cpu.register.enums.CONDITION;
 import cpu.register.enums.R8;

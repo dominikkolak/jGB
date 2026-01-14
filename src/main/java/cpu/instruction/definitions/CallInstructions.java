@@ -3,8 +3,7 @@ package cpu.instruction.definitions;
 import cpu.instruction.Instruction;
 import cpu.register.enums.CONDITION;
 
-import static cpu.instruction.CycleState.CONTINUE;
-import static cpu.instruction.CycleState.DONE;
+import static cpu.instruction.CycleState.*;
 
 // Credit for Instruction descriptions to:
 // Game Boy: Complete Technical Reference by gekkio

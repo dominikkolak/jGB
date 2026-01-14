@@ -1,8 +1,8 @@
 package cpu.instruction.tables;
 
 import cpu.instruction.Instruction;
-import cpu.instruction.definitions.BitInstructions;
-import cpu.instruction.definitions.RotateShiftInstructions;
+
+import cpu.instruction.definitions.*;
 import cpu.register.enums.R8;
 
 public class SecondaryOpcodeTable {

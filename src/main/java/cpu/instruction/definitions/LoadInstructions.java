@@ -2,14 +2,12 @@ package cpu.instruction.definitions;
 
 
 import cpu.instruction.Instruction;
-import cpu.register.enums.R16;
 import cpu.register.enums.R8;
+import cpu.register.enums.R16;
 
-import static cpu.instruction.CycleState.CONTINUE;
-import static cpu.instruction.CycleState.DONE;
+import static cpu.instruction.CycleState.*;
 import static cpu.register.enums.R16.*;
-import static cpu.register.enums.R8.A;
-import static cpu.register.enums.R8.C;
+import static cpu.register.enums.R8.*;
 
 // Credit for Instruction descriptions to:
 // Joonas Javanainen (gekkio)

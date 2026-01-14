@@ -3,19 +3,11 @@ package cart;
 import cart.exceptions.InvalidCartridgeException;
 import cart.exceptions.UnsupportedCartridgeException;
 import cart.header.CartridgeHeader;
-import cart.mbc.MBC0;
-import cart.mbc.MBC1;
-import cart.mbc.MemoryBankController;
-import cart.ram.ExternalMemory;
-import cart.ram.NRAM;
-import cart.ram.SRAM;
-import cart.rom.ROM;
-import cart.rom.ReadOnlyMemory;
-import cart.rtc.NRTC;
-import cart.rtc.RTC;
-import cart.rtc.RealTimeClock;
-import shared.Addressable;
-import shared.Component;
+import cart.mbc.*;
+import cart.ram.*;
+import cart.rom.*;
+import cart.rtc.*;
+import shared.*;
 
 public class Cartridge implements Addressable, Component {
 
