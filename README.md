@@ -8,6 +8,12 @@ Game Boy cartridge emulation in Java with ROM/RAM handling and Memory Bank Contr
 - ROM/RAM Management
 - Header Parsing and Validation
 
+## TODO
+
+- Other MBCs
+- Other RAM Types
+- Unified Device BUS
+
 ## Example Usage
 Example shows how to load a ROM and create a Cartridge. Then how to read from a address and write with bank switching.
 ```java
