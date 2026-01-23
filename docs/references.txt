@@ -1,0 +1,7 @@
+https://gekkio.fi/files/gb-docs/gbctr.pdf
+https://izik1.github.io/gbops/index.html
+https://gbdev.io/pandocs/#
+https://github.com/h3nnn4n/gameboy_documentation
+http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
+https://mgba-emu.github.io/gbdoc/
+https://problemkaputt.de/pandocs.htm
