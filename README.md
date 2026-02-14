@@ -132,6 +132,10 @@ The sub-instruction model is an architectural choice that improves timing behavi
 
 ## Related Work
 This repository has been squashed from three previouse repos. They can be found here:
-https://github.com/dominikkolak/dmg-core-prototype
-https://github.com/dominikkolak/dmg-cpu-sm83-e
-https://github.com/dominikkolak/dmg-cpu-cart-e
+
+- https://github.com/dominikkolak/dmg-core-prototype
+- https://github.com/dominikkolak/dmg-cpu-sm83-e
+- https://github.com/dominikkolak/dmg-cpu-cart-e
+
+## Disclaimer
+The primary UI was build with the help of LLMs. Should its reliabilty be a issue the emualtor can be run with the `--backup` paramter to get a more robust but limited self made UI.
