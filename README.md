@@ -116,7 +116,7 @@ The emulator is organized into subsystems that try to mirror the Game Boy hardwa
 
 ## Sub-Instruction Execution Model
 Instead of executing instructions atomically in a single step and the doing a callback at the end, jGB breaks each instruction into machine cycles (M-cycles). 
-Each M-cycle represents hardware operations and consumes 4 T-cycles. This decreses the complexity and severity of tming issues and makes the emualotr more accurate.
+Each M-cycle represents hardware operations and consumes 4 T-cycles. This decreses the complexity and severity of tming issues and makes the emulator more accurate.
 
 ### Execution Flow
 When the CPU executes an instruction, it progresses through multiple cycles:
@@ -130,3 +130,8 @@ This ensures all components observe the same passage of time and remain synchron
 This model provides better timing granularity than naive atomic executions but it does not achieve perfect cycle accuracy on its own.
 The sub-instruction model is an architectural choice that improves timing behavior over naive implementations, but significant work remains to make it a true cycle-accurate emulator.
 
+## Related Work
+This repository has been squashed from three previouse repos. They can be found here:
+https://github.com/dominikkolak/dmg-core-prototype
+https://github.com/dominikkolak/dmg-cpu-sm83-e
+https://github.com/dominikkolak/dmg-cpu-cart-e
