@@ -1,0 +1,137 @@
+name: Build Native Executables
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            extension: deb
+          - os: windows-latest
+            platform: windows
+            extension: exe
+          - os: macos-latest
+            platform: macos
+            extension: dmg
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build JAR with Maven
+        run: mvn clean package -DskipTests
+
+      - name: Detect runnable JAR
+        shell: bash
+        run: |
+          JAR=$(ls target/*.jar | grep -v original | head -n 1)
+          echo "JAR_NAME=$(basename $JAR)" >> $GITHUB_ENV
+
+      - name: Set version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+          else
+            echo "VERSION=1.0.0" >> $GITHUB_ENV
+          fi
+
+      - name: Install Linux dependencies
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fakeroot
+
+      - name: Build Windows Installer
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          jpackage `
+            --type exe `
+            --input target `
+            --dest dist `
+            --name jGB `
+            --main-jar $env:JAR_NAME `
+            --main-class Main `
+            --app-version $env:VERSION `
+            --description "Game Boy Emulator" `
+            --vendor "Dominik Kolak" `
+            --win-dir-chooser `
+            --win-menu `
+            --win-shortcut
+
+      - name: Build macOS Installer
+        if: matrix.os == 'macos-latest'
+        run: |
+          jpackage \
+            --type dmg \
+            --input target \
+            --dest dist \
+            --name jGB \
+            --main-jar $JAR_NAME \
+            --main-class Main \
+            --app-version $VERSION \
+            --description "Game Boy Emulator" \
+            --vendor "Dominik Kolak"
+
+      - name: Build Linux Installer
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          jpackage \
+            --type deb \
+            --input target \
+            --dest dist \
+            --name jgb \
+            --main-jar $JAR_NAME \
+            --main-class Main \
+            --app-version $VERSION \
+            --description "Game Boy Emulator" \
+            --vendor "Dominik Kolak" \
+            --linux-shortcut \
+            --linux-menu-group "Games"
+
+      - name: Upload Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: jGB-${{ matrix.platform }}-installer
+          path: dist/*.${{ matrix.extension }}
+
+  create-release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: installers
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: installers/**/*
+          draft: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
