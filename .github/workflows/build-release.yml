@@ -17,65 +17,51 @@ jobs:
           - os: ubuntu-latest
             platform: linux
             extension: deb
+            installer-type: deb
           - os: windows-latest
             platform: windows
             extension: exe
+            installer-type: exe
           - os: macos-latest
             platform: macos
             extension: dmg
+            installer-type: dmg
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 25
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '25'
+          java-version: '17'
           distribution: 'temurin'
           cache: maven
 
       - name: Build JAR with Maven
         run: mvn clean package -DskipTests
 
-      - name: Detect runnable JAR
+      - name: Create App Icon Directory
+        run: mkdir -p package/resources
         shell: bash
-        run: |
-          JAR=$(ls target/*.jar | grep -v original | head -n 1)
-          echo "JAR_NAME=$(basename $JAR)" >> $GITHUB_ENV
-
-      - name: Set version
-        shell: bash
-        run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-          else
-            echo "VERSION=1.0.0" >> $GITHUB_ENV
-          fi
-
-      - name: Install Linux dependencies
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y fakeroot
 
       - name: Build Windows Installer
         if: matrix.os == 'windows-latest'
-        shell: pwsh
         run: |
           jpackage `
             --type exe `
             --input target `
             --dest dist `
             --name jGB `
-            --main-jar $env:JAR_NAME `
-            --main-class Emulator `
-            --app-version $env:VERSION `
+            --main-jar jGB-1.0.jar `
+            --main-class Main `
+            --app-version 1.0 `
             --description "Game Boy Emulator" `
             --vendor "Dominik Kolak" `
             --win-dir-chooser `
             --win-menu `
             --win-shortcut
+        shell: pwsh
 
       - name: Build macOS Installer
         if: matrix.os == 'macos-latest'
@@ -85,11 +71,12 @@ jobs:
             --input target \
             --dest dist \
             --name jGB \
-            --main-jar $JAR_NAME \
-            --main-class Emulator \
-            --app-version $VERSION \
+            --main-jar jGB-1.0.jar \
+            --main-class Main \
+            --app-version 1.0 \
             --description "Game Boy Emulator" \
-            --vendor "Dominik Kolak"
+            --vendor "Dominik Kolak" \
+            --mac-package-name jGB
 
       - name: Build Linux Installer
         if: matrix.os == 'ubuntu-latest'
@@ -99,25 +86,31 @@ jobs:
             --input target \
             --dest dist \
             --name jgb \
-            --main-jar $JAR_NAME \
-            --main-class Emulator \
-            --app-version $VERSION \
+            --main-jar jGB-1.0.jar \
+            --main-class Main \
+            --app-version 1.0 \
             --description "Game Boy Emulator" \
             --vendor "Dominik Kolak" \
             --linux-shortcut \
             --linux-menu-group "Games"
+
+      - name: List dist directory (debug)
+        run: ls -la dist
+        shell: bash
 
       - name: Upload Installer
         uses: actions/upload-artifact@v4
         with:
           name: jGB-${{ matrix.platform }}-installer
           path: dist/*.${{ matrix.extension }}
+          if-no-files-found: error
 
   create-release:
     name: Create GitHub Release
     needs: build
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
+    
     permissions:
       contents: write
 
@@ -127,11 +120,15 @@ jobs:
         with:
           path: installers
 
+      - name: Display structure of downloaded files
+        run: ls -R installers
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           files: installers/**/*
           draft: false
+          prerelease: false
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
