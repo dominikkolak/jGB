@@ -53,7 +53,7 @@ jobs:
             --input target `
             --dest dist `
             --name jGB `
-            --main-jar jGB-1.0.jar `
+            --main-jar jgb-1.0-SNAPSHOT.jar `
             --main-class Main `
             --app-version 1.0 `
             --description "Game Boy Emulator" `
@@ -71,7 +71,7 @@ jobs:
             --input target \
             --dest dist \
             --name jGB \
-            --main-jar jGB-1.0.jar \
+            --main-jar jgb-1.0-SNAPSHOT.jar \
             --main-class Main \
             --app-version 1.0 \
             --description "Game Boy Emulator" \
@@ -86,7 +86,7 @@ jobs:
             --input target \
             --dest dist \
             --name jgb \
-            --main-jar jGB-1.0.jar \
+            --main-jar jgb-1.0-SNAPSHOT.jar \
             --main-class Main \
             --app-version 1.0 \
             --description "Game Boy Emulator" \
