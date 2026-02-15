@@ -28,10 +28,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '25'
           distribution: 'temurin'
           cache: maven
 
@@ -69,7 +69,7 @@ jobs:
             --dest dist `
             --name jGB `
             --main-jar $env:JAR_NAME `
-            --main-class Main `
+            --main-class Emulator `
             --app-version $env:VERSION `
             --description "Game Boy Emulator" `
             --vendor "Dominik Kolak" `
@@ -86,7 +86,7 @@ jobs:
             --dest dist \
             --name jGB \
             --main-jar $JAR_NAME \
-            --main-class Main \
+            --main-class Emulator \
             --app-version $VERSION \
             --description "Game Boy Emulator" \
             --vendor "Dominik Kolak"
@@ -100,7 +100,7 @@ jobs:
             --dest dist \
             --name jgb \
             --main-jar $JAR_NAME \
-            --main-class Main \
+            --main-class Emulator \
             --app-version $VERSION \
             --description "Game Boy Emulator" \
             --vendor "Dominik Kolak" \
