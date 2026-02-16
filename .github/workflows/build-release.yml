@@ -1,5 +1,4 @@
 name: Build Native Executables
-
 on:
   push:
     tags:
@@ -17,15 +16,12 @@ jobs:
           - os: ubuntu-latest
             platform: linux
             extension: deb
-            installer-type: deb
           - os: windows-latest
             platform: windows
             extension: exe
-            installer-type: exe
           - os: macos-latest
             platform: macos
             extension: dmg
-            installer-type: dmg
 
     steps:
       - name: Checkout code
@@ -38,12 +34,11 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build JAR with Maven
+      - name: Build regular JAR with Maven (for jpackage)
         run: mvn clean package -DskipTests
 
-      - name: Create App Icon Directory
-        run: mkdir -p package/resources
-        shell: bash
+      - name: Copy dependencies for jpackage
+        run: mvn dependency:copy-dependencies -DoutputDirectory=target/libs
 
       - name: Build Windows Installer
         if: matrix.os == 'windows-latest'
@@ -54,13 +49,16 @@ jobs:
             --dest dist `
             --name jGB `
             --main-jar jgb-1.0-SNAPSHOT.jar `
-            --main-class Main `
+            --main-class Emulator `
+            --module-path "target/libs" `
+            --add-modules javafx.controls,javafx.fxml `
             --app-version 1.0 `
             --description "Game Boy Emulator" `
             --vendor "Dominik Kolak" `
             --win-dir-chooser `
             --win-menu `
-            --win-shortcut
+            --win-shortcut `
+            --java-options "-Xmx1024m"
         shell: pwsh
 
       - name: Build macOS Installer
@@ -72,11 +70,14 @@ jobs:
             --dest dist \
             --name jGB \
             --main-jar jgb-1.0-SNAPSHOT.jar \
-            --main-class Main \
+            --main-class Emulator \
+            --module-path "target/libs" \
+            --add-modules javafx.controls,javafx.fxml \
             --app-version 1.0 \
             --description "Game Boy Emulator" \
             --vendor "Dominik Kolak" \
-            --mac-package-name jGB
+            --mac-package-name jGB \
+            --java-options "-Xmx1024m"
 
       - name: Build Linux Installer
         if: matrix.os == 'ubuntu-latest'
@@ -87,12 +88,15 @@ jobs:
             --dest dist \
             --name jgb \
             --main-jar jgb-1.0-SNAPSHOT.jar \
-            --main-class Main \
+            --main-class Emulator \
+            --module-path "target/libs" \
+            --add-modules javafx.controls,javafx.fxml \
             --app-version 1.0 \
             --description "Game Boy Emulator" \
             --vendor "Dominik Kolak" \
             --linux-shortcut \
-            --linux-menu-group "Games"
+            --linux-menu-group "Games" \
+            --java-options "-Xmx1024m"
 
       - name: List dist directory (debug)
         run: ls -la dist
@@ -105,12 +109,39 @@ jobs:
           path: dist/*.${{ matrix.extension }}
           if-no-files-found: error
 
+  build-fat-jar:
+    name: Build Fat JAR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build Fat JAR
+        run: mvn clean package -P fat-jar -DskipTests
+
+      - name: Rename Fat JAR
+        run: mv target/jgb-1.0-SNAPSHOT-fat.jar target/jgb-1.0-SNAPSHOT-standalone.jar
+
+      - name: Upload Fat JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: jGB-standalone-jar
+          path: target/jgb-1.0-SNAPSHOT-standalone.jar
+          if-no-files-found: error
+
   create-release:
     name: Create GitHub Release
-    needs: build
+    needs: [build, build-fat-jar]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
-    
+
     permissions:
       contents: write
 
@@ -130,5 +161,17 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
+          body: |
+            ## Download Options
+            
+            ### Native Installers (Recommended)
+            - **Windows**: `jGB-windows-installer/*.exe`
+            - **macOS**: `jGB-macos-installer/*.dmg`
+            - **Linux**: `jGB-linux-installer/*.deb`
+            
+            ### Standalone JAR
+            - **All Platforms**: `jGB-standalone-jar/jgb-1.0-SNAPSHOT-standalone.jar`
+              - Requires Java 23+ with JavaFX
+              - Run with: `java -jar jgb-1.0-SNAPSHOT-standalone.jar`
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

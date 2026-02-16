@@ -18,7 +18,7 @@ public class Emulator {
             runHeadless(args);
         } else {
             if (backup) { runBackup(args); }
-            runNormal(args);
+            else { runNormal(args); }
         }
     }
 
